@@ -5,12 +5,12 @@ class Voter:  # The class for each instance of a voter
     def __init__(self, input_line: str):
         self.ballot: list[str] = []
         self.ballot = input_line.split(";")  # values from Excel are separated by ";", split them into list
-        self.ballot = self. ballot[:(self. ballot.index("--END BALLOT--"))]  # removes all candidates beyond then end
+        self.ballot = self.ballot[:(self.ballot.index("--END BALLOT--"))]  # removes all candidates beyond then end
 
     def remove_candidate(self, candidate) -> int:
         """Remove the stated candidate from the voters ballot, if they exist."""
         if candidate in self.ballot:  # only remove candidate if they exist
-            self. ballot.remove(candidate)
+            self.ballot.remove(candidate)
             return 1
         else:
             return 0
@@ -21,8 +21,8 @@ class Voter:  # The class for each instance of a voter
 
     def return_first(self) -> str | None:
         """Return the current first choice of the voter."""
-        if len(self. ballot) > 0:
-            return self. ballot[0]
+        if len(self.ballot) > 0:
+            return self.ballot[0]
         else:
             return None
 
@@ -46,7 +46,7 @@ class Election:
 
         lost_votes: int = 0
         self.round += 1
-        for current_voter in self. voters:
+        for current_voter in self.voters:
             entry = current_voter.return_first()
             if entry is None or not self.active_candidates.__contains__(entry):
                 lost_votes += 1
@@ -54,7 +54,7 @@ class Election:
                 self.active_candidates[entry] += 1
 
         print("\n")
-        print(f"During round {self. round} of voting the tallies are {self.active_candidates}.")
+        print(f"During round {self.round} of voting the tallies are {self.active_candidates}.")
         print(f"Currently {lost_votes} votes have been lost.")
 
         lowest_candidate = ""
@@ -64,6 +64,18 @@ class Election:
             if count < lowest_votes:
                 lowest_votes = count
                 lowest_candidate = candidate
+            elif count == lowest_votes:
+                print("WARNING TIED VOTE, recommendation run vote twice and see if it changes result")
+                response = input(
+                    f"enter <c> to keep current candidate{lowest_candidate}"
+                    f" or anything else to change to new candidate {candidate}"
+                )
+                if response == "c":
+                    print("keeping current")
+                else:
+                    print("changing")
+                    lowest_votes = count
+                    lowest_candidate = candidate
 
         self.active_candidates.pop(lowest_candidate)
         for voter in self.voters:
