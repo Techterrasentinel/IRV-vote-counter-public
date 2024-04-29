@@ -94,11 +94,12 @@ class Election:
 
 
 def match_names():
+    """A function to compare membership.txt entries with voters.txt"""
     member_reader = open("membership.txt", "r")
     members: list[str] = []
     for read_line in member_reader:
         members.append(read_line.rstrip("\n"))
-    member_reader.close()
+    member_reader.close()  # get all the members
 
     formatted_members: dict[str, str] = {}
     for member in members:
@@ -106,15 +107,15 @@ def match_names():
             index = member.find("2")
             name = member[:index]
             id_number = member[index:]
-            formatted_members[id_number] = name
+            formatted_members[id_number] = name  # format all members to ID: NAME in a dictionary
 
     voters_reader = open("voters.txt", "r")
     all_input: list[str] = []
     for read_line in voters_reader:
         all_input.append(read_line.rstrip("\n"))
-    voters_reader.close()
+    voters_reader.close()  # get all voters
 
-    externals = 0
+    externals = 0  # no real case handling for externals as none voted and it adds complexity
 
     formatted_voters: dict[str, str] = {}
     for voter in all_input:
@@ -122,19 +123,19 @@ def match_names():
             index = voter.find("2")
             name = voter[:index]
             id_number = voter[index:]
-            formatted_voters[id_number] = name
+            formatted_voters[id_number] = name  # format all voters to ID: NAME in a dictionary
         else:
             externals += 1
-            formatted_voters[f"external {externals}"] = voter
+            formatted_voters[f"external {externals}"] = voter  # make an entry for externals (no ID)
 
     counter = 0
     invalids: list[int] = []
     for entry in formatted_voters:
-        if formatted_members.__contains__(entry):
+        if formatted_members.__contains__(entry):  # if the student id from voters matches an entry in members
             print(f"voter on line {counter} is correct! ")
-            print(f"{formatted_voters[entry]} = {formatted_members[entry]}?")
+            print(f"{formatted_voters[entry]} = {formatted_members[entry]}?")  # display both names
             validate = input()
-            if validate == "y":
+            if validate == "y":  # ask user if names match, if yes fine, if no list them
                 pass
             elif validate == "n":
                 invalids.append(counter)
@@ -149,6 +150,7 @@ def match_names():
 
 
 def run_vote():
+    """A function to run the whole vote from the data in the vote file"""
     file = open("votes.txt", "r")  # open the file storing the list of votes
 
     all_candidates = file.readline().rstrip("\n")  # get all possible candidates as each voter has entered them all
