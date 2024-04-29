@@ -1,3 +1,5 @@
 # created by virtualenv automatically
 # ignore the secret vote count file
 votes.txt
+voters.txt
+membership.txt

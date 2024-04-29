@@ -1,5 +1,7 @@
+import re
 
-# Toms vote counter
+
+# Tom's vote counter
 
 class Voter:  # The class for each instance of a voter
     def __init__(self, input_line: str):
@@ -68,7 +70,7 @@ class Election:
                 print("WARNING TIED VOTE, recommendation run vote twice and see if it changes result")
                 response = input(
                     f"enter <c> to keep current candidate{lowest_candidate}"
-                    f" or anything else to change to new candidate {candidate}"
+                    f" or anything else to change to new candidate {candidate} :"
                 )
                 if response == "c":
                     print("keeping current")
@@ -91,24 +93,84 @@ class Election:
             return "Continue"
 
 
+def match_names():
+    member_reader = open("membership.txt", "r")
+    members: list[str] = []
+    for read_line in member_reader:
+        members.append(read_line.rstrip("\n"))
+    member_reader.close()
+
+    formatted_members: dict[str, str] = {}
+    for member in members:
+        if member.find("2") != -1:
+            index = member.find("2")
+            name = member[:index]
+            id_number = member[index:]
+            formatted_members[id_number] = name
+
+    voters_reader = open("voters.txt", "r")
+    all_input: list[str] = []
+    for read_line in voters_reader:
+        all_input.append(read_line.rstrip("\n"))
+    voters_reader.close()
+
+    externals = 0
+
+    formatted_voters: dict[str, str] = {}
+    for voter in all_input:
+        if voter.find("2") != -1:
+            index = voter.find("2")
+            name = voter[:index]
+            id_number = voter[index:]
+            formatted_voters[id_number] = name
+        else:
+            externals += 1
+            formatted_voters[f"external {externals}"] = voter
+
+    counter = 0
+    invalids: list[int] = []
+    for entry in formatted_voters:
+        if formatted_members.__contains__(entry):
+            print(f"voter on line {counter} is correct! ")
+            print(f"{formatted_voters[entry]} = {formatted_members[entry]}?")
+            validate = input()
+            if validate == "y":
+                pass
+            elif validate == "n":
+                invalids.append(counter)
+        else:
+            print(f"could not find {entry} in dict")
+            invalids.append(counter)
+        counter += 1
+
+    print(f"invalid lines are {invalids}")
+
 # Main code Stuff
 
 
-file = open("votes.txt", "r")  # open the file storing the list of votes
+def run_vote():
+    file = open("votes.txt", "r")  # open the file storing the list of votes
 
-all_candidates = file.readline().rstrip("\n")  # get all possible candidates as each voter has entered them all
-file.seek(0)  # reset index of pointer in file
+    all_candidates = file.readline().rstrip("\n")  # get all possible candidates as each voter has entered them all
+    file.seek(0)  # reset index of pointer in file
 
-all_voters: list[Voter] = []
-for line in file:  # instantiate all voters
-    all_voters.append(Voter(line.rstrip("\n")))
+    all_voters: list[Voter] = []
+    for line in file:  # instantiate all voters
+        if line != "\n":
+            all_voters.append(Voter(line.rstrip("\n")))
+        else:
+            print("blank line here")
 
-file.close()  # close file as good practice
+    file.close()  # close file as good practice
 
-this_election = Election(all_candidates, all_voters)  # create the whole election
+    this_election = Election(all_candidates, all_voters)  # create the whole election
 
-flag_over = True
-while flag_over:
-    if this_election.tally_votes() != "Continue":
-        flag_over = False
+    flag_over = True
+    while flag_over:
+        if this_election.tally_votes() != "Continue":
+            flag_over = False
 
+# lets a go, write which function you want to run!
+
+
+run_vote()
