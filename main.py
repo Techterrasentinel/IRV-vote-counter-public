@@ -172,7 +172,17 @@ def run_vote():
         if this_election.tally_votes() != "Continue":
             flag_over = False
 
-# lets a go, write which function you want to run!
+# lets a go,
 
+print("\n\n\nHello User!")
 
-run_vote()
+while True:
+    print("Enter <match> to run the match names function")
+    print("Enter <vote> to run the vote")
+    choice = input("=>")
+    if choice == "match":
+        match_names()
+    elif choice == "vote":
+        run_vote()
+    else:
+        print("Invalid input, try again")
